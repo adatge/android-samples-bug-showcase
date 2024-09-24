@@ -15,14 +15,19 @@
 package com.example.mapwithmarker
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * An activity that displays a Google map with a marker (pin) to indicate a particular location.
@@ -46,15 +51,25 @@ class MapsMarkerActivity : AppCompatActivity(), OnMapReadyCallback {
 
     // [START maps_marker_on_map_ready_add_marker]
     override fun onMapReady(googleMap: GoogleMap) {
-      val sydney = LatLng(-33.852, 151.211)
-      googleMap.addMarker(
-        MarkerOptions()
-          .position(sydney)
-          .title("Marker in Sydney")
-      )
-      // [START_EXCLUDE silent]
-      googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-      // [END_EXCLUDE]
+        val bitmap =
+            AppCompatResources.getDrawable(this, R.drawable.baseline_wb_cloudy_24)?.toBitmap() ?: throw Exception("")
+        val sydney = LatLng(-33.852, 151.211)
+        val marker = googleMap.addMarker(
+            MarkerOptions()
+                .position(sydney)
+                .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                .title("Marker in Sydney")
+        )
+        // [START_EXCLUDE silent]
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+
+        lifecycleScope.launch {
+            while (true) {
+                marker?.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                delay(16)
+            }
+        }
+        // [END_EXCLUDE]
     }
     // [END maps_marker_on_map_ready_add_marker]
 }
