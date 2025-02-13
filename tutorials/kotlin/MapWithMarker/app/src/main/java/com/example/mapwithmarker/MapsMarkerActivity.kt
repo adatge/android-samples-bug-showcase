@@ -23,7 +23,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.AdvancedMarkerOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -56,7 +55,7 @@ class MapsMarkerActivity : AppCompatActivity(), OnMapReadyCallback {
             AppCompatResources.getDrawable(this, R.drawable.baseline_wb_cloudy_24)?.toBitmap() ?: throw Exception("")
         val sydney = LatLng(-33.852, 151.211)
         val marker = googleMap.addMarker(
-            AdvancedMarkerOptions()
+            MarkerOptions()
                 .position(sydney)
                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                 .title("Marker in Sydney")
