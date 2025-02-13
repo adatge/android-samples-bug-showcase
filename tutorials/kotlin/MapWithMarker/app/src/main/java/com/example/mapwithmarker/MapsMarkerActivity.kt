@@ -14,7 +14,9 @@
 
 package com.example.mapwithmarker
 
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.view.Choreographer
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
@@ -23,8 +25,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.AdvancedMarkerOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,6 +53,21 @@ class MapsMarkerActivity : AppCompatActivity(), OnMapReadyCallback {
     // [END maps_marker_get_map_async]
     // [END_EXCLUDE]
 
+    private var iconUpdateScheduled = false
+    private var marker: Marker? = null
+    private fun updateMarkerIcon(bitmap: Bitmap) {
+        if (marker == null) return
+
+        // Avoid scheduling multiple updates for the same frame
+        if (!iconUpdateScheduled) {
+            iconUpdateScheduled = true
+            Choreographer.getInstance().postFrameCallback { frameTimeNanos ->
+                marker?.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                iconUpdateScheduled = false
+            }
+        }
+    }
+
     // [START maps_marker_on_map_ready_add_marker]
     override fun onMapReady(googleMap: GoogleMap) {
         val bitmap =
@@ -65,7 +84,8 @@ class MapsMarkerActivity : AppCompatActivity(), OnMapReadyCallback {
 
         lifecycleScope.launch {
             while (true) {
-                marker?.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                //marker?.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                updateMarkerIcon(bitmap);
                 delay(16)
             }
         }
